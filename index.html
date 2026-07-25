@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <input id="title" placeholder="Title">
+    <br><br>
+
+    <input id="description" placeholder="Description">
+    <br><br>
+
+    <div id="container"></div>
+
+    <script>
+
+        // Creates one Todo element
+        function createTodo(title, description, id) {
+
+            const child = document.createElement("div");
+            child.id = id;
+
+            const firstGrandChild = document.createElement("div");
+            firstGrandChild.innerHTML = title;
+
+            const secondGrandChild = document.createElement("div");
+            secondGrandChild.innerHTML = description;
+
+            const thirdGrandChild = document.createElement("button");
+            thirdGrandChild.innerHTML = "Mark as Done";
+
+            thirdGrandChild.onclick = function () {
+                markAsDone(id);
+            };
+
+            child.appendChild(firstGrandChild);
+            child.appendChild(secondGrandChild);
+            child.appendChild(thirdGrandChild);
+
+            return child;
+        }
+
+        // Updates the UI
+        function updateTodo(state) {
+
+            const parent = document.getElementById("container");
+
+            // Remove old todos
+            parent.innerHTML = "";
+
+            // Add latest todos
+            for (let i = 0; i < state.length; i++) {
+
+                const child = createTodo(
+                    state[i].title,
+                    state[i].description,
+                    i
+                );
+
+                parent.appendChild(child);
+            }
+        }
+
+        // Fetch todos from backend
+        async function fetchTodos() {
+
+            const res = await fetch("http://localhost:3000/todos");
+
+            const data = await res.json();
+
+            updateTodo(data);
+        }
+
+        // Called when button is clicked
+        function markAsDone(id) {
+
+            alert("Todo " + id + " completed");
+
+            // Here you could also send a request to the backend
+            // fetch(`/todos/${id}`, { method: "PUT" })
+        }
+
+        // Initial fetch
+        fetchTodos();
+
+        // Fetch every 5 seconds
+        window.setInterval(fetchTodos, 5000);
+
+    </script>
+
+</body>
+
+</html>
